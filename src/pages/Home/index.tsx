@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {VStack, FlatList, Box, Spacer} from 'native-base';
-
+import firestore from '@react-native-firebase/firestore';
 import Header from '../../components/Header';
 import TodoItemList from '../../components/TodoItemList';
 import {IItem} from '../../types/todo';
@@ -26,6 +26,25 @@ const Home: React.FC = () => {
       createdAt: new Date(),
     },
   ]);
+
+  useEffect(() => {
+    firestore()
+      .collection('todos')
+      .onSnapshot(snapshot => {
+        const todoList: IItem[] = [] as IItem[];
+        snapshot.forEach(documentSnapshot => {
+          const data = documentSnapshot.data();
+          const todoItem: IItem = {
+            id: documentSnapshot.id,
+            title: data.title,
+            isDone: data.isDone,
+          };
+          todoList.push(todoItem);
+        });
+
+        setTodos(todoList);
+      });
+  }, []);
 
   return (
     <VStack space={1} alignItems="center" mt={3}>
