@@ -6,29 +6,10 @@ import TodoItemList from '../../components/TodoItemList';
 import {IItem} from '../../types/todo';
 
 const Home: React.FC = () => {
-  const [todos, setTodos] = useState<IItem[]>([
-    {
-      id: '12312',
-      title: 'Assistir Aula Ignite',
-      isDone: false,
-      createdAt: new Date(),
-    },
-    {
-      id: '321456',
-      title: 'Finalizar desafio',
-      isDone: true,
-      createdAt: new Date(),
-    },
-    {
-      id: '3214',
-      title: 'Estudar para prova',
-      isDone: false,
-      createdAt: new Date(),
-    },
-  ]);
+  const [todos, setTodos] = useState<IItem[]>([]);
 
   useEffect(() => {
-    firestore()
+    const subscriber = firestore()
       .collection('todos')
       .onSnapshot(snapshot => {
         const todoList: IItem[] = [] as IItem[];
@@ -44,6 +25,8 @@ const Home: React.FC = () => {
 
         setTodos(todoList);
       });
+
+    return () => subscriber();
   }, []);
 
   return (
